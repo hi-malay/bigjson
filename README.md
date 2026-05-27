@@ -1,3 +1,5 @@
+## DOWNLOAD[https://github.com/hi-malay/bigjson/releases]
+
 # bigjson
 
 Desktop JSON viewer for huge files. Tauri + Rust + React. Runs on macOS, Linux, and Windows.
