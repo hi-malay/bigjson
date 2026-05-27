@@ -1,10 +1,24 @@
 # bigjson
 
-Desktop JSON viewer for huge files. Tauri + Rust + React. macOS for now.
+Desktop JSON viewer for huge files. Tauri + Rust + React. Runs on macOS, Linux, and Windows.
 
 VS Code chokes on 100MB+ JSON because it treats the file as editable text. bigjson skips all of that — parses natively in Rust with `simd-json`, builds a flat index of every node, renders only the rows you can see.
 
 ![loaded tree](docs/screenshots/loaded-tree.png)
+
+## Download
+
+Latest release: [github.com/hi-malay/bigjson/releases/latest](https://github.com/hi-malay/bigjson/releases/latest)
+
+- **macOS** (Intel + Apple Silicon, universal): [bigjson_0.1.0_universal.dmg](https://github.com/hi-malay/bigjson/releases/latest/download/bigjson_0.1.0_universal.dmg)
+- **Windows** (x64): [bigjson_0.1.0_x64-setup.exe](https://github.com/hi-malay/bigjson/releases/latest/download/bigjson_0.1.0_x64-setup.exe)
+- **Linux AppImage** (x64): [bigjson_0.1.0_amd64.AppImage](https://github.com/hi-malay/bigjson/releases/latest/download/bigjson_0.1.0_amd64.AppImage)
+- **Linux .deb** (Debian/Ubuntu): [bigjson_0.1.0_amd64.deb](https://github.com/hi-malay/bigjson/releases/latest/download/bigjson_0.1.0_amd64.deb)
+
+All builds are **unsigned**. First-launch workarounds:
+- macOS: right-click → Open, or run `xattr -cr /Applications/bigjson.app`
+- Windows: SmartScreen blocks it → click "More info" → "Run anyway"
+- Linux AppImage: `chmod +x bigjson_*.AppImage && ./bigjson_*.AppImage`
 
 ## What it does
 
@@ -48,4 +62,4 @@ React + Vite + Tailwind 4  ←→  Tauri commands  ←→  Rust (simd-json + fla
 
 ## Not yet
 
-Files larger than RAM, raw text view, diff, Windows/Linux builds. v2.
+Files larger than RAM, raw text view, diff editor, code-signing/notarization. v2.

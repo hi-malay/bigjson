@@ -1,0 +1,85 @@
+name: release
+
+# Triggers on tag push like v0.1.0 — builds bigjson on macOS, Linux, and
+# Windows runners and uploads the bundles as assets on a GitHub Release.
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Universal binary on macOS so a single .dmg runs on Intel + Apple Silicon.
+          - platform: macos-latest
+            args: --target universal-apple-darwin
+            rust-targets: x86_64-apple-darwin,aarch64-apple-darwin
+          # Use older Ubuntu for broad glibc compatibility — newer builds
+          # often fail to launch on slightly older distros.
+          - platform: ubuntu-22.04
+            args: ''
+            rust-targets: ''
+          - platform: windows-latest
+            args: ''
+            rust-targets: ''
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install linux build deps
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libssl-dev \
+            patchelf
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: install rust + targets
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust-targets }}
+
+      - name: rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: ./src-tauri -> target
+
+      - run: npm ci
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'bigjson ${{ github.ref_name }}'
+          releaseBody: |
+            ## Downloads
+
+            - **macOS** (Intel + Apple Silicon): `bigjson_*_universal.dmg`
+            - **Windows**: `bigjson_*_x64-setup.exe`
+            - **Linux**: `bigjson_*_amd64.AppImage` or `.deb`
+
+            All builds are **unsigned** — on first launch your OS may warn:
+            - macOS: right-click the app → Open, or `xattr -cr /Applications/bigjson.app`
+            - Windows: SmartScreen → "More info" → "Run anyway"
+            - Linux AppImage: `chmod +x bigjson_*.AppImage && ./bigjson_*.AppImage`
+          releaseDraft: false
+          prerelease: false
+          args: ${{ matrix.args }}
