@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>bigjson — Huge JSON File Viewer for macOS, Windows, Linux (Free, Open Source)</title>
+  <meta name="description" content="bigjson is a fast, native desktop JSON viewer for huge files. Open 100MB, 500MB, or multi-GB JSON files instantly on macOS, Windows, and Linux. Built with Tauri + Rust + React. Free and open-source Dadroit alternative." />
+  <meta name="keywords" content="huge JSON viewer, large JSON file viewer, JSON viewer 100MB, big JSON file editor, JSON parser desktop app, Dadroit alternative, macOS JSON viewer, Windows JSON viewer, Linux JSON viewer, JSONPath GUI, JSON tree viewer, fast JSON viewer, open source JSON viewer, Tauri JSON viewer, Rust JSON viewer, simd-json viewer" />
+  <meta name="author" content="Malay Mishra" />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <link rel="canonical" href="https://hi-malay.github.io/bigjson/" />
+  <link rel="icon" type="image/png" href="icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="bigjson — Huge JSON File Viewer for macOS, Windows, Linux" />
+  <meta property="og:description" content="Open 100MB+ JSON files instantly. Native desktop viewer built with Tauri + Rust. Free and open source." />
+  <meta property="og:url" content="https://hi-malay.github.io/bigjson/" />
+  <meta property="og:image" content="https://hi-malay.github.io/bigjson/screenshots/loaded-tree.png" />
+  <meta property="og:image:alt" content="bigjson screenshot — virtualized tree view of a huge JSON file with JSONPath search" />
+  <meta property="og:site_name" content="bigjson" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="bigjson — Huge JSON File Viewer" />
+  <meta name="twitter:description" content="Open 100MB+ JSON files instantly. Native desktop viewer built with Tauri + Rust. Free and open source." />
+  <meta name="twitter:image" content="https://hi-malay.github.io/bigjson/screenshots/loaded-tree.png" />
+
+  <!-- Structured data: SoftwareApplication -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "bigjson",
+    "operatingSystem": "macOS, Windows, Linux",
+    "applicationCategory": "DeveloperApplication",
+    "downloadUrl": "https://github.com/hi-malay/bigjson/releases/latest",
+    "softwareVersion": "0.1.0",
+    "license": "https://opensource.org/licenses/MIT",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "Malay Mishra" },
+    "description": "Fast, native desktop JSON viewer for huge files. Open 100MB+ JSON files instantly on macOS, Windows, and Linux. Built with Tauri + Rust + React.",
+    "url": "https://hi-malay.github.io/bigjson/",
+    "image": "https://hi-malay.github.io/bigjson/screenshots/loaded-tree.png",
+    "screenshot": "https://hi-malay.github.io/bigjson/screenshots/loaded-tree.png",
+    "featureList": [
+      "Open huge JSON files (100MB+, multi-GB)",
+      "Virtualized tree rendering",
+      "JSONPath search",
+      "Text search across keys and values",
+      "Copy node value or JSONPath",
+      "Native macOS, Windows, Linux builds"
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "How big a JSON file can bigjson open?",
+        "acceptedAnswer": { "@type": "Answer", "text": "On a machine with 16GB RAM it opens JSON files up to ~3GB comfortably. v2 will add memory-mapped streaming for files larger than RAM." } },
+      { "@type": "Question", "name": "Is bigjson free?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. MIT licensed, open source, no telemetry, no ads, no sign-in." } },
+      { "@type": "Question", "name": "Does bigjson work offline?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes — it is a native desktop app. No network calls, no cloud parsing, no data leaves your machine." } },
+      { "@type": "Question", "name": "Is bigjson a Dadroit alternative?",
+        "acceptedAnswer": { "@type": "Answer", "text": "That is the inspiration. bigjson is open source and free. Dadroit is closed source with a free tier." } }
+    ]
+  }
+  </script>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0d1117; --panel: #161b22; --border: #30363d; --fg: #e6edf3;
+      --muted: #8b949e; --accent: #58a6ff; --accent2: #d2a8ff;
+      --max: 920px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; }
+    main { max-width: var(--max); margin: 0 auto; padding: 64px 24px 96px; }
+    header { display: flex; gap: 16px; align-items: center; margin-bottom: 24px; }
+    header img { width: 64px; height: 64px; border-radius: 14px; }
+    h1 { font-size: 38px; margin: 0; line-height: 1.15; letter-spacing: -0.02em; }
+    h1 .accent { background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .tag { color: var(--muted); font-size: 14px; margin-top: 4px; }
+    .lead { font-size: 18px; color: #c9d1d9; margin: 28px 0; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 28px 0 40px; }
+    .cta { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 8px; border: 1px solid var(--border); color: var(--fg); text-decoration: none; font-weight: 500; background: var(--panel); transition: border-color .15s, transform .15s; }
+    .cta:hover { border-color: var(--accent); transform: translateY(-1px); }
+    .cta.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #0d1117; border: 0; }
+    .shot { width: 100%; border-radius: 10px; border: 1px solid var(--border); margin: 24px 0; display: block; }
+    h2 { font-size: 22px; margin: 40px 0 12px; letter-spacing: -0.01em; }
+    ul { padding-left: 20px; }
+    li { margin: 6px 0; }
+    code { background: var(--panel); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+    pre { background: var(--panel); border: 1px solid var(--border); padding: 14px; border-radius: 8px; overflow-x: auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin: 16px 0; }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+    .card h3 { margin: 0 0 4px; font-size: 14px; }
+    .card p { margin: 0; color: var(--muted); font-size: 13px; }
+    footer { color: var(--muted); font-size: 13px; margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); }
+    a { color: var(--accent); }
+    a:hover { color: var(--accent2); }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <img src="icon.png" alt="bigjson app icon" width="64" height="64" />
+      <div>
+        <h1><span class="accent">bigjson</span> — huge JSON file viewer</h1>
+        <div class="tag">macOS · Windows · Linux · Free · Open Source · MIT</div>
+      </div>
+    </header>
+
+    <p class="lead">
+      Fast, native desktop viewer for <strong>large JSON files</strong>. Open <strong>100MB, 500MB, even multi-gigabyte</strong> JSON instantly. Built with Tauri, Rust (<code>simd-json</code>), and React. The open-source alternative to Dadroit for inspecting huge JSON dumps, API exports, analytics datasets, and log files that crash VS Code, Sublime Text, and other text editors.
+    </p>
+
+    <div class="cta-row">
+      <a class="cta primary" href="https://github.com/hi-malay/bigjson/releases/latest">Download latest</a>
+      <a class="cta" href="https://github.com/hi-malay/bigjson">View on GitHub</a>
+      <a class="cta" href="https://github.com/hi-malay/bigjson/releases/latest/download/bigjson_0.1.0_universal.dmg">macOS .dmg</a>
+      <a class="cta" href="https://github.com/hi-malay/bigjson/releases/latest/download/bigjson_0.1.0_x64-setup.exe">Windows .exe</a>
+      <a class="cta" href="https://github.com/hi-malay/bigjson/releases/latest/download/bigjson_0.1.0_amd64.AppImage">Linux AppImage</a>
+    </div>
+
+    <img class="shot" src="screenshots/loaded-tree.png" alt="bigjson screenshot — desktop viewer for huge JSON files with virtualized tree and JSONPath search" />
+
+    <h2>Why bigjson</h2>
+    <p>
+      VS Code and other text editors treat JSON as editable text — UTF-16 string in RAM, tokenizer, syntax highlighter, undo buffer, plugins. That's why they freeze on 100MB+ files. Online JSON viewers can't handle anything past ~10MB and you'd never paste private data into them anyway. bigjson is a <strong>read-only viewer</strong> that parses the file natively in Rust, builds a flat index of every node, and renders only the rows visible on screen. RAM usage stays close to the file size instead of 3-10×.
+    </p>
+
+    <h2>Features</h2>
+    <div class="grid">
+      <div class="card"><h3>Open huge JSON files</h3><p>100MB in under a second; multi-GB on a 16GB machine.</p></div>
+      <div class="card"><h3>Virtualized tree</h3><p>Millions of nodes scroll smoothly. Only visible rows render.</p></div>
+      <div class="card"><h3>Lazy expansion</h3><p>Children load on demand, even for huge arrays.</p></div>
+      <div class="card"><h3>JSONPath search</h3><p><code>$.users[*].email</code>, <code>$.orders[?(@.total &gt; 1000)]</code>, etc.</p></div>
+      <div class="card"><h3>Text search</h3><p>Case-insensitive substring across all keys and values.</p></div>
+      <div class="card"><h3>Copy node or JSONPath</h3><p>Pretty-printed subtree, or the exact path to clipboard.</p></div>
+      <div class="card"><h3>Cross-platform</h3><p>Native builds for macOS (universal), Windows, Linux.</p></div>
+      <div class="card"><h3>Offline + private</h3><p>No network calls. Nothing leaves your machine.</p></div>
+    </div>
+
+    <h2>Install</h2>
+    <ul>
+      <li><strong>macOS:</strong> download the <code>.dmg</code>, drag bigjson to Applications. On first launch right-click → Open, or run <code>xattr -cr /Applications/bigjson.app</code>.</li>
+      <li><strong>Windows:</strong> run the <code>.exe</code> installer. SmartScreen will warn — click "More info" → "Run anyway".</li>
+      <li><strong>Linux:</strong> <code>chmod +x bigjson_*.AppImage &amp;&amp; ./bigjson_*.AppImage</code>, or install the <code>.deb</code>.</li>
+    </ul>
+
+    <h2>FAQ</h2>
+    <h3>How big a JSON file can bigjson open?</h3>
+    <p>On a machine with 16GB of RAM it comfortably opens JSON files up to ~3GB. v2 will add memory-mapped streaming for files larger than RAM.</p>
+    <h3>Is bigjson free?</h3>
+    <p>Yes — MIT licensed, no telemetry, no ads, no sign-in.</p>
+    <h3>Does bigjson work offline?</h3>
+    <p>Yes. It's a native desktop app — no network calls, no cloud parsing, no data leaves your machine.</p>
+    <h3>Is bigjson a Dadroit alternative?</h3>
+    <p>That's the inspiration. bigjson is open-source and free. Dadroit is closed-source with a free tier.</p>
+
+    <footer>
+      <p>bigjson is open source under the MIT license. Built by <a href="https://github.com/hi-malay">Malay Mishra</a>. Source at <a href="https://github.com/hi-malay/bigjson">github.com/hi-malay/bigjson</a>.</p>
+    </footer>
+  </main>
+</body>
+</html>

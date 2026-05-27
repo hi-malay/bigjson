@@ -1,12 +1,12 @@
 ## [DOWNLOAD](https://github.com/hi-malay/bigjson/releases)
 
-# bigjson
+# bigjson — huge JSON file viewer for macOS, Windows, and Linux
 
-Desktop JSON viewer for huge files. Tauri + Rust + React. Runs on macOS, Linux, and Windows.
+**Fast, native desktop JSON viewer for large files.** Open 100MB, 500MB, even multi-GB JSON files instantly. Built with Tauri, Rust (`simd-json`), and React. A free, open-source alternative to Dadroit for inspecting big JSON, log dumps, API exports, and analytics datasets that crash VS Code, Sublime Text, and other text editors.
 
-VS Code chokes on 100MB+ JSON because it treats the file as editable text. bigjson skips all of that — parses natively in Rust with `simd-json`, builds a flat index of every node, renders only the rows you can see.
+**Keywords:** huge JSON viewer · large JSON file viewer · JSON viewer 100MB · big JSON file editor · fast JSON parser desktop app · Dadroit alternative · macOS JSON viewer · Windows JSON viewer · Linux JSON viewer · open large JSON file · JSONPath search GUI · JSON tree viewer.
 
-![loaded tree](docs/screenshots/loaded-tree.png)
+![bigjson screenshot — desktop viewer for huge JSON files with virtualized tree and JSONPath search](docs/screenshots/loaded-tree.png)
 
 ## Download
 
@@ -22,14 +22,21 @@ All builds are **unsigned**. First-launch workarounds:
 - Windows: SmartScreen blocks it → click "More info" → "Run anyway"
 - Linux AppImage: `chmod +x bigjson_*.AppImage && ./bigjson_*.AppImage`
 
-## What it does
+## Why bigjson (vs VS Code, Sublime, Notepad++, Online JSON viewers)
 
-- Open a JSON file (dialog, drag-drop, or ⌘O)
-- Virtualized tree — millions of nodes scroll instantly, expansion is lazy
-- Text search across keys and values
-- JSONPath search (`$.users[*].email`)
-- Copy node value or JSONPath
-- Status bar: size, node count, parse + index time
+VS Code and other text editors treat JSON as editable text — UTF-16 string in RAM, tokenizer, syntax highlighter, undo buffer, plugins. That's why they freeze on 100MB+ files. Online JSON viewers can't handle anything past ~10MB and you'd never paste private data there anyway. bigjson is a **read-only viewer** that parses the file natively in Rust, builds a flat index of every node, and renders only the rows visible on screen. RAM usage stays close to the file size instead of 3-10×.
+
+## Features
+
+- **Open huge JSON files instantly** — 100MB in under a second, no UI freeze.
+- **Virtualized tree** — millions of nodes scroll smoothly because only ~50 visible rows render at a time.
+- **Lazy expansion** — children load on demand, even arrays with hundreds of thousands of entries.
+- **Text search** across keys and values (case-insensitive).
+- **JSONPath search** — `$.users[*].email`, `$.orders[?(@.total > 1000)]`, etc.
+- **Copy node value** (pretty-printed subtree) or **copy JSONPath** for any node.
+- **Drag-and-drop** files onto the window, or use the ⌘O shortcut.
+- **Native macOS, Windows, and Linux** builds. No browser required.
+- **Open source** under MIT. Built with [Tauri 2](https://tauri.app), Rust, and React.
 
 ## Screens
 
@@ -65,3 +72,27 @@ React + Vite + Tailwind 4  ←→  Tauri commands  ←→  Rust (simd-json + fla
 ## Not yet
 
 Files larger than RAM, raw text view, diff editor, code-signing/notarization. v2.
+
+## FAQ
+
+**How big a JSON file can bigjson open?**
+On a machine with 16GB of RAM it comfortably opens JSON files up to ~3GB. v2 will add memory-mapped streaming for files larger than RAM.
+
+**Is bigjson free?**
+Yes — MIT licensed, no telemetry, no ads, no sign-in.
+
+**Does bigjson work offline?**
+Yes. It's a native desktop app — no network calls, no cloud parsing, no data leaves your machine.
+
+**Does bigjson edit JSON or just view it?**
+View only. The goal is fast inspection of large files; an edit mode would require an undo stack and other machinery that defeats the speed advantage.
+
+**Is bigjson a Dadroit alternative?**
+That's the inspiration. bigjson is open-source and free. Dadroit is closed-source with a free tier.
+
+**Why does macOS / Windows warn on first launch?**
+The release binaries are unsigned (no Apple Developer Program / Authenticode signing fees yet). See the [Download](#download) section for one-line workarounds per OS.
+
+## Tags
+
+`json` `json-viewer` `large-json` `huge-json` `json-parser` `tauri` `rust` `react` `desktop-app` `macos` `windows` `linux` `simd-json` `jsonpath` `developer-tools` `dadroit-alternative` `data-inspection` `log-viewer`
