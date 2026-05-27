@@ -1,4 +1,4 @@
-## DOWNLOAD[https://github.com/hi-malay/bigjson/releases]
+## [DOWNLOAD](https://github.com/hi-malay/bigjson/releases)
 
 # bigjson
 
