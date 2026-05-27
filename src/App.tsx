@@ -34,7 +34,9 @@ function App() {
     try {
       const m = await ipc.openFile(path);
       setMeta(m);
-      toast.success(`Loaded ${m.node_count.toLocaleString()} nodes in ${m.parse_ms + m.index_ms}ms`);
+      toast.success(
+        `Loaded ${m.node_count.toLocaleString()} nodes in ${m.parse_ms + m.index_ms}ms`,
+      );
     } catch (e) {
       toast.error(String(e));
     } finally {
@@ -45,7 +47,9 @@ function App() {
   const pickFile = useCallback(async () => {
     const selected = await openDialog({
       multiple: false,
-      filters: [{ name: "JSON", extensions: ["json", "jsonl", "ndjson", "txt"] }],
+      filters: [
+        { name: "JSON", extensions: ["json", "jsonl", "ndjson", "txt"] },
+      ],
     });
     if (typeof selected === "string") {
       await openPath(selected);
@@ -56,7 +60,8 @@ function App() {
   // webview.onDragDropEvent with phases: enter / over / drop / leave.
   // Guarded so the FE still boots in a plain browser (Tauri runtime absent).
   useEffect(() => {
-    if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) return;
+    if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window))
+      return;
     const unlistenPromise = getCurrentWebview().onDragDropEvent((evt) => {
       if (evt.payload.type === "over") {
         setDragging(true);
@@ -94,10 +99,18 @@ function App() {
     <div className="flex h-full flex-col">
       <header className="flex items-center gap-2 border-b border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2">
         <FileJson size={14} className="text-[var(--color-accent)]" />
-        <span className="text-[13px] font-medium tracking-tight">bigjson</span>
-        <span className="text-[11px] text-[var(--color-muted)]">huge JSON viewer</span>
+        <span className="text-[13px] font-medium tracking-tight">bigJson</span>
+        <span className="text-[11px] text-[var(--color-muted)]">
+          huge JSON viewer
+        </span>
         <div className="ml-auto flex items-center gap-1">
-          <Button size="sm" variant="ghost" onClick={pickFile} disabled={loading} className="gap-1.5">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={pickFile}
+            disabled={loading}
+            className="gap-1.5"
+          >
             <FolderOpen size={12} /> Open
           </Button>
         </div>

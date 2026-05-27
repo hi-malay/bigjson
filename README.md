@@ -1,30 +1,30 @@
-## [DOWNLOAD](https://github.com/hi-malay/bigjson/releases)
+## [DOWNLOAD](https://github.com/hi-malay/bigJson/releases)
 
-# bigjson huge JSON file viewer for macOS, Windows, and Linux
+# bigJson huge JSON file viewer for macOS, Windows, and Linux
 
 **Fast, native desktop JSON viewer for large files.** Open 100MB, 500MB, even multi-GB JSON files instantly. Built with Tauri, Rust (`simd-json`), and React. A free, open-source alternative to Dadroit for inspecting big JSON, log dumps, API exports, and analytics datasets that crash VS Code, Sublime Text, and other text editors.
 
 **Keywords:** huge JSON viewer · large JSON file viewer · JSON viewer 100MB · big JSON file editor · fast JSON parser desktop app · Dadroit alternative · macOS JSON viewer · Windows JSON viewer · Linux JSON viewer · open large JSON file · JSONPath search GUI · JSON tree viewer.
 
-![bigjson screenshot desktop viewer for huge JSON files with virtualized tree and JSONPath search](docs/screenshots/loaded-tree.png)
+![bigJson screenshot desktop viewer for huge JSON files with virtualized tree and JSONPath search](docs/screenshots/loaded-tree.png)
 
 ## Download
 
-Latest release: [github.com/hi-malay/bigjson/releases/latest](https://github.com/hi-malay/bigjson/releases/latest)
+Latest release: [github.com/hi-malay/bigJson/releases/latest](https://github.com/hi-malay/bigJson/releases/latest)
 
-- **macOS** (Intel + Apple Silicon, universal): [bigjson_0.1.0_universal.dmg](https://github.com/hi-malay/bigjson/releases/latest/download/bigjson_0.1.0_universal.dmg)
-- **Windows** (x64): [bigjson_0.1.0_x64-setup.exe](https://github.com/hi-malay/bigjson/releases/latest/download/bigjson_0.1.0_x64-setup.exe)
-- **Linux AppImage** (x64): [bigjson_0.1.0_amd64.AppImage](https://github.com/hi-malay/bigjson/releases/latest/download/bigjson_0.1.0_amd64.AppImage)
-- **Linux .deb** (Debian/Ubuntu): [bigjson_0.1.0_amd64.deb](https://github.com/hi-malay/bigjson/releases/latest/download/bigjson_0.1.0_amd64.deb)
+- **macOS** (Intel + Apple Silicon, universal): [bigJson_0.1.0_universal.dmg](https://github.com/hi-malay/bigJson/releases/latest/download/bigJson_0.1.0_universal.dmg)
+- **Windows** (x64): [bigJson_0.1.0_x64-setup.exe](https://github.com/hi-malay/bigJson/releases/latest/download/bigJson_0.1.0_x64-setup.exe)
+- **Linux AppImage** (x64): [bigJson_0.1.0_amd64.AppImage](https://github.com/hi-malay/bigJson/releases/latest/download/bigJson_0.1.0_amd64.AppImage)
+- **Linux .deb** (Debian/Ubuntu): [bigJson_0.1.0_amd64.deb](https://github.com/hi-malay/bigJson/releases/latest/download/bigJson_0.1.0_amd64.deb)
 
 All builds are **unsigned**. First-launch workarounds:
-- macOS: right-click → Open, or run `xattr -cr /Applications/bigjson.app`
+- macOS: right-click → Open, or run `xattr -cr /Applications/bigJson.app`
 - Windows: SmartScreen blocks it → click "More info" → "Run anyway"
-- Linux AppImage: `chmod +x bigjson_*.AppImage && ./bigjson_*.AppImage`
+- Linux AppImage: `chmod +x bigJson_*.AppImage && ./bigJson_*.AppImage`
 
-## Why bigjson (vs VS Code, Sublime, Notepad++, Online JSON viewers)
+## Why bigJson (vs VS Code, Sublime, Notepad++, Online JSON viewers)
 
-VS Code and other text editors treat JSON as editable text UTF-16 string in RAM, tokenizer, syntax highlighter, undo buffer, plugins. That's why they freeze on 100MB+ files. Online JSON viewers can't handle anything past ~10MB and you'd never paste private data there anyway. bigjson is a **read-only viewer** that parses the file natively in Rust, builds a flat index of every node, and renders only the rows visible on screen. RAM usage stays close to the file size instead of 3-10×.
+VS Code and other text editors treat JSON as editable text UTF-16 string in RAM, tokenizer, syntax highlighter, undo buffer, plugins. That's why they freeze on 100MB+ files. Online JSON viewers can't handle anything past ~10MB and you'd never paste private data there anyway. bigJson is a **read-only viewer** that parses the file natively in Rust, builds a flat index of every node, and renders only the rows visible on screen. RAM usage stays close to the file size instead of 3-10×.
 
 ## Features
 
@@ -75,20 +75,20 @@ Files larger than RAM, raw text view, diff editor, code-signing/notarization. v2
 
 ## FAQ
 
-**How big a JSON file can bigjson open?**
+**How big a JSON file can bigJson open?**
 On a machine with 16GB of RAM it comfortably opens JSON files up to ~3GB. v2 will add memory-mapped streaming for files larger than RAM.
 
-**Is bigjson free?**
+**Is bigJson free?**
 Yes MIT licensed, no telemetry, no ads, no sign-in.
 
-**Does bigjson work offline?**
+**Does bigJson work offline?**
 Yes. It's a native desktop app no network calls, no cloud parsing, no data leaves your machine.
 
-**Does bigjson edit JSON or just view it?**
+**Does bigJson edit JSON or just view it?**
 View only. The goal is fast inspection of large files; an edit mode would require an undo stack and other machinery that defeats the speed advantage.
 
-**Is bigjson a Dadroit alternative?**
-That's the inspiration. bigjson is open-source and free. Dadroit is closed-source with a free tier.
+**Is bigJson a Dadroit alternative?**
+That's the inspiration. bigJson is open-source and free. Dadroit is closed-source with a free tier.
 
 **Why does macOS / Windows warn on first launch?**
 The release binaries are unsigned (no Apple Developer Program / Authenticode signing fees yet). See the [Download](#download) section for one-line workarounds per OS.

@@ -1,6 +1,6 @@
 name: release
 
-# Triggers on tag push like v0.1.0 — builds bigjson on macOS, Linux, and
+# Triggers on tag push like v0.1.0 — builds bigJson on macOS, Linux, and
 # Windows runners and uploads the bundles as assets on a GitHub Release.
 on:
   push:
@@ -68,18 +68,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: 'bigjson ${{ github.ref_name }}'
+          releaseName: 'bigJson ${{ github.ref_name }}'
           releaseBody: |
             ## Downloads
 
-            - **macOS** (Intel + Apple Silicon): `bigjson_*_universal.dmg`
-            - **Windows**: `bigjson_*_x64-setup.exe`
-            - **Linux**: `bigjson_*_amd64.AppImage` or `.deb`
+            - **macOS** (Intel + Apple Silicon): `bigJson_*_universal.dmg`
+            - **Windows**: `bigJson_*_x64-setup.exe`
+            - **Linux**: `bigJson_*_amd64.AppImage` or `.deb`
 
             All builds are **unsigned** — on first launch your OS may warn:
-            - macOS: right-click the app → Open, or `xattr -cr /Applications/bigjson.app`
+            - macOS: right-click the app → Open, or `xattr -cr /Applications/bigJson.app`
             - Windows: SmartScreen → "More info" → "Run anyway"
-            - Linux AppImage: `chmod +x bigjson_*.AppImage && ./bigjson_*.AppImage`
+            - Linux AppImage: `chmod +x bigJson_*.AppImage && ./bigJson_*.AppImage`
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}

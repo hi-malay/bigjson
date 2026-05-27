@@ -1,12 +1,12 @@
 [package]
-name = "bigjson"
+name = "bigJson"
 version = "0.1.0"
 description = "Desktop viewer for huge JSON files"
 authors = ["Malay Mishra"]
 edition = "2021"
 
 [lib]
-name = "bigjson_lib"
+name = "bigJson_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
