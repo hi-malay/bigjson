@@ -1,8 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemaps-image/1.1">
   <url>
     <loc>https://hi-malay.github.io/bigjson/</loc>
+    <lastmod>2026-05-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://hi-malay.github.io/bigjson/screenshots/loaded-tree.png</image:loc>
+      <image:title>bigjson — virtualized tree view of a huge JSON file</image:title>
+      <image:caption>Lazy virtualized tree rendering of a large JSON file in bigjson, the desktop JSON viewer.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://hi-malay.github.io/bigjson/screenshots/search.png</image:loc>
+      <image:title>bigjson — text search across keys and values</image:title>
+      <image:caption>Case-insensitive text search across keys and values inside a huge JSON file.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://hi-malay.github.io/bigjson/screenshots/jsonpath.png</image:loc>
+      <image:title>bigjson — JSONPath search</image:title>
+      <image:caption>JSONPath query (e.g. $.users[*].email) against a large JSON file.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://hi-malay.github.io/bigjson/screenshots/empty-state.png</image:loc>
+      <image:title>bigjson — empty state</image:title>
+      <image:caption>Drag-drop or ⌘O to open a JSON file in bigjson.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://hi-malay.github.io/bigjson/icon.png</image:loc>
+      <image:title>bigjson app icon</image:title>
+    </image:image>
   </url>
 </urlset>
