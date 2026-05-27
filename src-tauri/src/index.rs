@@ -84,6 +84,23 @@ impl Index {
         out
     }
 
+    /// Index of `id` within its parent's child list. Returns 0 for root.
+    pub fn position_in_parent(&self, id: u32) -> u32 {
+        let node = match self.get(id) {
+            Some(n) => n,
+            None => return 0,
+        };
+        let parent = match node.parent {
+            Some(p) => p,
+            None => return 0,
+        };
+        self.children(parent)
+            .iter()
+            .position(|c| *c == id)
+            .map(|p| p as u32)
+            .unwrap_or(0)
+    }
+
     /// Build a JSONPath-style string for a node, e.g. `$.users[0].email`.
     pub fn path_of(&self, id: u32) -> String {
         let mut chain: Vec<&Node> = Vec::new();
@@ -134,10 +151,11 @@ fn estimate_node_count(v: &Value) -> usize {
     }
 }
 
-/// Recursive walk that fills `nodes` and `child_ids`. Returns the id of the node
-/// inserted for `value`. We push the parent node first (with an empty children
-/// range), recurse for its children, then patch the children range — this gives
-/// children contiguous ids in `child_ids`.
+/// Recursive walk that fills `nodes` and `child_ids`. Returns the id of the
+/// node inserted for `value`. We collect direct children into a local Vec
+/// first, then append them to the shared arena as a contiguous block — without
+/// this, deeper recursions would push grandchildren onto `child_ids` before
+/// this node's own direct children, and `children` would span descendants too.
 fn walk(
     value: &Value,
     parent: Option<u32>,
@@ -165,8 +183,7 @@ fn walk(
         children: 0..0,
     });
 
-    // Recurse for containers and stitch the children range afterward.
-    let kids_start = child_ids.len() as u32;
+    let mut my_kids: Vec<u32> = Vec::with_capacity(child_count as usize);
     match value {
         Value::Object(m) => {
             for (k, v) in m.iter() {
@@ -177,7 +194,7 @@ fn walk(
                     nodes,
                     child_ids,
                 );
-                child_ids.push(cid);
+                my_kids.push(cid);
             }
         }
         Value::Array(a) => {
@@ -189,18 +206,15 @@ fn walk(
                     nodes,
                     child_ids,
                 );
-                child_ids.push(cid);
+                my_kids.push(cid);
             }
         }
         _ => {}
     }
-    let kids_end = child_ids.len() as u32;
 
-    // Note: children inside the range were pushed in insertion order, but
-    // because of recursion the slice covers only direct children of `id`.
-    // Each direct child's id was pushed onto `child_ids` after its own subtree
-    // finished walking — so the slice [kids_start..kids_end] holds exactly
-    // this node's direct children in document order.
+    let kids_start = child_ids.len() as u32;
+    child_ids.extend(&my_kids);
+    let kids_end = child_ids.len() as u32;
     nodes[id as usize].children = kids_start..kids_end;
 
     id
@@ -218,4 +232,55 @@ fn truncate(s: &str, max: usize) -> String {
     out.push_str(&s[..end]);
     out.push('…');
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn children_only_returns_direct_kids() {
+        // Mirrors the user's interlinks.json shape: array of objects, each with
+        // a nested dlp_links array of objects.
+        let v = json!([
+            {
+                "id": "a",
+                "title": "T",
+                "dlp_links": [
+                    { "db_id": 1, "score": 0.9 },
+                    { "db_id": 2, "score": 0.8 }
+                ]
+            },
+            { "id": "b", "title": "U", "dlp_links": [] }
+        ]);
+        let idx = Index::build(&v);
+
+        // root → 2 direct children (the two outer objects)
+        let root_kids = idx.children(idx.root);
+        assert_eq!(root_kids.len(), 2, "root should have 2 children, got {:?}", root_kids);
+
+        // root[0] → 3 direct children: id, title, dlp_links
+        let obj0 = root_kids[0];
+        let obj0_kids = idx.children(obj0);
+        assert_eq!(obj0_kids.len(), 3, "root[0] should have 3 keys");
+        let keys0: Vec<&str> = obj0_kids
+            .iter()
+            .map(|c| match &idx.get(*c).unwrap().key {
+                NodeKey::ObjectKey { key } => key.as_str(),
+                _ => "?",
+            })
+            .collect();
+        assert_eq!(keys0, vec!["id", "title", "dlp_links"]);
+
+        // dlp_links → 2 direct children
+        let dlp = *obj0_kids.last().unwrap();
+        let dlp_kids = idx.children(dlp);
+        assert_eq!(dlp_kids.len(), 2, "dlp_links should have 2 items");
+
+        // dlp_links[0] → 2 direct children: db_id, score
+        let dlp0 = dlp_kids[0];
+        let dlp0_kids = idx.children(dlp0);
+        assert_eq!(dlp0_kids.len(), 2);
+    }
 }

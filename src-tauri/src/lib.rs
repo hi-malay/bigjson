@@ -19,6 +19,7 @@ pub fn run() {
             commands::get_node,
             commands::get_children,
             commands::get_ancestors,
+            commands::get_position,
             commands::get_value,
             commands::get_path,
             commands::search,

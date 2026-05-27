@@ -34,6 +34,7 @@ export const ipc = {
   getChildren: (id: number, offset: number, limit: number) =>
     invoke<NodeView[]>("get_children", { id, offset, limit }),
   getAncestors: (id: number) => invoke<number[]>("get_ancestors", { id }),
+  getPosition: (id: number) => invoke<number>("get_position", { id }),
   getValue: (id: number) => invoke<string>("get_value", { id }),
   getPath: (id: number) => invoke<string>("get_path", { id }),
   search: (query: string, mode: SearchMode) =>

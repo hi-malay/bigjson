@@ -117,6 +117,13 @@ pub fn get_ancestors(id: u32, state: State<'_, AppState>) -> Result<Vec<u32>, Ap
 }
 
 #[tauri::command]
+pub fn get_position(id: u32, state: State<'_, AppState>) -> Result<u32, AppError> {
+    let guard = state.current.read();
+    let loaded = guard.as_ref().ok_or(AppError::NoFile)?;
+    Ok(loaded.index.position_in_parent(id))
+}
+
+#[tauri::command]
 pub fn get_value(id: u32, state: State<'_, AppState>) -> Result<String, AppError> {
     let guard = state.current.read();
     let loaded = guard.as_ref().ok_or(AppError::NoFile)?;

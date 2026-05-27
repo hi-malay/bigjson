@@ -85,17 +85,29 @@ export function useTree(rootId: number | null) {
     [rebuild]
   );
 
-  // Expand all ancestors of `id` and ensure it's visible (used when search jumps).
+  // Expand all ancestors of `id` and load enough children of each ancestor that
+  // the path down to `id` is materialised in our cache. Without this, a search
+  // hit at array index 7000 inside `users[]` would never appear in `rows`
+  // because we only paginate the first PAGE_SIZE children by default.
   const reveal = useCallback(
     async (id: number) => {
       const ancestors = await ipc.getAncestors(id);
-      for (const a of ancestors) {
-        if (!expandedRef.current.get(a)) {
-          expandedRef.current.set(a, true);
-          if (!cacheRef.current.has(a)) {
-            const kids = await ipc.getChildren(a, 0, PAGE_SIZE);
-            cacheRef.current.set(a, kids);
-          }
+      const chain = [...ancestors, id]; // walk root → target
+      for (let i = 0; i < chain.length - 1; i++) {
+        const parent = chain[i];
+        const childOnPath = chain[i + 1];
+        expandedRef.current.set(parent, true);
+        if (!cacheRef.current.has(parent)) {
+          const kids = await ipc.getChildren(parent, 0, PAGE_SIZE);
+          cacheRef.current.set(parent, kids);
+        }
+        // ensure `childOnPath` is inside the loaded slice; load more pages until it is
+        const targetPos = await ipc.getPosition(childOnPath);
+        while ((cacheRef.current.get(parent)?.length ?? 0) <= targetPos) {
+          const have = cacheRef.current.get(parent)?.length ?? 0;
+          const more = await ipc.getChildren(parent, have, PAGE_SIZE);
+          if (more.length === 0) break;
+          cacheRef.current.set(parent, [...(cacheRef.current.get(parent) ?? []), ...more]);
         }
       }
       await rebuild();
