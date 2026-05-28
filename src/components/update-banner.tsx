@@ -18,7 +18,7 @@ export function UpdateBanner({ update, onDismiss }: Props) {
       <button
         className="ml-2 rounded border border-[var(--color-border)] bg-[var(--color-panel)] px-2 py-0.5 hover:border-[var(--color-accent)]"
         onClick={() => {
-          openUrl(update.url).catch(() => {});
+          openUrl(update.downloadUrl).catch(() => {});
         }}
       >
         Download

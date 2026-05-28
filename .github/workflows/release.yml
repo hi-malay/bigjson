@@ -51,6 +51,10 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: sync version from tag
+        shell: bash
+        run: node scripts/sync-version.mjs "${GITHUB_REF_NAME}"
+
       - name: install rust + targets
         uses: dtolnay/rust-toolchain@stable
         with:
