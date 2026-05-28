@@ -9,14 +9,17 @@ import { EmptyState } from "@/components/empty-state";
 import { SearchBar } from "@/components/search-bar";
 import { StatusBar } from "@/components/status-bar";
 import { TreeView } from "@/components/tree-view";
+import { UpdateBanner } from "@/components/update-banner";
 import { useTree } from "@/hooks/use-tree";
 import { useSearch } from "@/hooks/use-search";
 import { ipc, FileMeta } from "@/lib/tauri";
+import { checkForUpdate, type UpdateInfo } from "@/lib/update-check";
 
 function App() {
   const [meta, setMeta] = useState<FileMeta | null>(null);
   const [loading, setLoading] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [update, setUpdate] = useState<UpdateInfo | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const { rows, toggle, reveal, isExpanded } = useTree(meta?.root_id ?? null);
@@ -78,6 +81,13 @@ function App() {
     };
   }, [openPath]);
 
+  // One-shot update check on launch — uses GitHub Releases API.
+  useEffect(() => {
+    checkForUpdate().then((u) => {
+      if (u) setUpdate(u);
+    });
+  }, []);
+
   // Keyboard shortcuts: ⌘O open, ⌘F focus search, Esc clear search
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -115,6 +125,8 @@ function App() {
           </Button>
         </div>
       </header>
+
+      {update && <UpdateBanner update={update} onDismiss={() => setUpdate(null)} />}
 
       {meta && (
         <SearchBar
