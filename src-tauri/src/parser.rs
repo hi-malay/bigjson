@@ -14,33 +14,72 @@ pub struct ParseOutcome {
 
 /// Read a JSON file from disk and parse it into a `serde_json::Value`.
 ///
-/// Uses `simd-json` for the parse — it mutates the input buffer in place
-/// (zero-copy slices for strings where possible) and is several times faster
-/// than vanilla `serde_json` on large inputs. Falls back to `serde_json`
-/// only if simd-json fails (very rare; usually means input is genuinely
-/// malformed, in which case serde_json will fail too with a better error).
+/// Tries three strategies in order:
+///   1. `simd-json` — fastest, mutates the input buffer.
+///   2. `serde_json` — slower but accepts a few inputs simd-json rejects.
+///   3. NDJSON / JSON Lines fallback — one JSON value per line. Wrapped in
+///      a `Value::Array` so the rest of the viewer treats it like a normal
+///      top-level array.
+///
+/// The third path is the common reason a file "fails to open" — log dumps
+/// and analytics exports are usually NDJSON, not a single JSON value.
 pub fn load_file(path: &Path) -> Result<ParseOutcome, AppError> {
     let size_bytes = fs::metadata(path)
         .map_err(|e| AppError::Io(format!("stat {}: {}", path.display(), e)))?
         .len();
 
-    let mut bytes = fs::read(path)
+    let bytes = fs::read(path)
         .map_err(|e| AppError::Io(format!("read {}: {}", path.display(), e)))?;
 
     let started = Instant::now();
-    let value: Value = match simd_json::serde::from_slice(&mut bytes) {
+
+    // 1) simd-json (mutates a clone so we can retry on failure)
+    let mut buf = bytes.clone();
+    let value: Value = match simd_json::serde::from_slice(&mut buf) {
         Ok(v) => v,
         Err(simd_err) => {
-            // simd-json mutates the buffer, so re-read for the fallback.
-            let raw = fs::read(path)
-                .map_err(|e| AppError::Io(format!("re-read {}: {}", path.display(), e)))?;
-            serde_json::from_slice(&raw)
-                .map_err(|serde_err| AppError::Parse(format!(
-                    "simd-json: {simd_err}; serde_json: {serde_err}"
-                )))?
+            // 2) serde_json against the untouched bytes
+            match serde_json::from_slice::<Value>(&bytes) {
+                Ok(v) => v,
+                Err(serde_err) => {
+                    // 3) NDJSON / JSON Lines
+                    match parse_ndjson(&bytes) {
+                        Some(v) => v,
+                        None => {
+                            return Err(AppError::Parse(format!(
+                                "not valid JSON or NDJSON.\nsimd-json: {simd_err}\nserde_json: {serde_err}"
+                            )))
+                        }
+                    }
+                }
+            }
         }
     };
     let parse_ms = started.elapsed().as_millis() as u64;
 
     Ok(ParseOutcome { value, size_bytes, parse_ms })
+}
+
+/// Try to interpret the byte buffer as NDJSON (one JSON value per line). Skips
+/// blank lines and an optional UTF-8 BOM. Returns `None` if any non-empty line
+/// fails to parse, or if there's only one usable line (in which case it isn't
+/// really NDJSON and a parse error from earlier strategies is more useful).
+fn parse_ndjson(bytes: &[u8]) -> Option<Value> {
+    // strip UTF-8 BOM
+    let slice = bytes.strip_prefix(b"\xef\xbb\xbf").unwrap_or(bytes);
+    let text = std::str::from_utf8(slice).ok()?;
+
+    let mut items = Vec::new();
+    for line in text.lines() {
+        let trimmed = line.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+        let v: Value = serde_json::from_str(trimmed).ok()?;
+        items.push(v);
+    }
+    if items.len() <= 1 {
+        return None;
+    }
+    Some(Value::Array(items))
 }
