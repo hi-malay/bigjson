@@ -1,6 +1,6 @@
 [package]
 name = "bigJson"
-version = "0.1.2"
+version = "0.1.3"
 description = "Desktop viewer for huge JSON files"
 authors = ["Malay Mishra"]
 edition = "2021"

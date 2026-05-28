@@ -11,8 +11,63 @@ on:
 permissions:
   contents: write
 
+env:
+  # Opt into the Node.js 24 runtime for js-based actions to silence the
+  # node-20 deprecation warning (default flip happens June 2026).
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
+  # One job creates a draft release first so matrix builds below upload
+  # to the same release_id instead of racing to createRelease (which throws
+  # `already_exists` on the second-place runner).
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.create-release.outputs.result }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: ensure release exists
+        id: create-release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = process.env.GITHUB_REF_NAME;
+            try {
+              const { data } = await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag,
+              });
+              return data.id;
+            } catch (e) {
+              if (e.status !== 404) throw e;
+            }
+            const body = [
+              '## Downloads',
+              '',
+              '- **macOS** (Intel + Apple Silicon): `bigJson_*_universal.dmg`',
+              '- **Windows**: `bigJson_*_x64-setup.exe`',
+              '- **Linux**: `bigJson_*_amd64.AppImage` or `.deb`',
+              '',
+              'All builds are **unsigned** — on first launch your OS may warn:',
+              '- macOS: right-click the app → Open, or `xattr -cr /Applications/bigJson.app`',
+              '- Windows: SmartScreen → "More info" → "Run anyway"',
+              '- Linux AppImage: `chmod +x bigJson_*.AppImage && ./bigJson_*.AppImage`',
+            ].join('\n');
+            const { data } = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tag,
+              name: `bigJson ${tag}`,
+              body,
+              draft: true,
+              prerelease: false,
+            });
+            return data.id;
+
   build:
+    needs: create-release
     strategy:
       fail-fast: false
       matrix:
@@ -71,19 +126,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: 'bigJson ${{ github.ref_name }}'
-          releaseBody: |
-            ## Downloads
-
-            - **macOS** (Intel + Apple Silicon): `bigJson_*_universal.dmg`
-            - **Windows**: `bigJson_*_x64-setup.exe`
-            - **Linux**: `bigJson_*_amd64.AppImage` or `.deb`
-
-            All builds are **unsigned** — on first launch your OS may warn:
-            - macOS: right-click the app → Open, or `xattr -cr /Applications/bigJson.app`
-            - Windows: SmartScreen → "More info" → "Run anyway"
-            - Linux AppImage: `chmod +x bigJson_*.AppImage && ./bigJson_*.AppImage`
-          releaseDraft: false
-          prerelease: false
+          releaseId: ${{ needs.create-release.outputs.release_id }}
           args: ${{ matrix.args }}
+
+  # Flip the draft → published once every platform finished uploading.
+  publish-release:
+    runs-on: ubuntu-latest
+    needs: [create-release, build]
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: ${{ needs.create-release.outputs.release_id }},
+              draft: false,
+              prerelease: false,
+            });
