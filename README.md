@@ -12,10 +12,11 @@
 
 Latest release: [github.com/hi-malay/bigJson/releases/latest](https://github.com/hi-malay/bigJson/releases/latest)
 
-- **macOS** (Intel + Apple Silicon, universal): [bigJson_0.1.0_universal.dmg](https://github.com/hi-malay/bigJson/releases/latest/download/bigJson_0.1.0_universal.dmg)
-- **Windows** (x64): [bigJson_0.1.0_x64-setup.exe](https://github.com/hi-malay/bigJson/releases/latest/download/bigJson_0.1.0_x64-setup.exe)
-- **Linux AppImage** (x64): [bigJson_0.1.0_amd64.AppImage](https://github.com/hi-malay/bigJson/releases/latest/download/bigJson_0.1.0_amd64.AppImage)
-- **Linux .deb** (Debian/Ubuntu): [bigJson_0.1.0_amd64.deb](https://github.com/hi-malay/bigJson/releases/latest/download/bigJson_0.1.0_amd64.deb)
+- **macOS** (Intel + Apple Silicon, universal): [bigJson_0.1.3_universal.dmg](https://github.com/hi-malay/bigJson/releases/latest/download/bigJson_0.1.3_universal.dmg)
+- **Windows** (x64): [bigJson_0.1.3_x64-setup.exe](https://github.com/hi-malay/bigJson/releases/latest/download/bigJson_0.1.3_x64-setup.exe) or [bigJson_0.1.3_x64_en-US.msi](https://github.com/hi-malay/bigJson/releases/latest/download/bigJson_0.1.3_x64_en-US.msi)
+- **Linux AppImage** (x64): [bigJson_0.1.3_amd64.AppImage](https://github.com/hi-malay/bigJson/releases/latest/download/bigJson_0.1.3_amd64.AppImage)
+- **Linux .deb** (Debian/Ubuntu): [bigJson_0.1.3_amd64.deb](https://github.com/hi-malay/bigJson/releases/latest/download/bigJson_0.1.3_amd64.deb)
+- **Linux .rpm** (Fedora/RHEL): [bigJson-0.1.3-1.x86_64.rpm](https://github.com/hi-malay/bigJson/releases/latest/download/bigJson-0.1.3-1.x86_64.rpm)
 
 All builds are **unsigned**. First-launch workarounds:
 - macOS: right-click → Open, or run `xattr -cr /Applications/bigJson.app`
